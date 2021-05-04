@@ -11,12 +11,10 @@ describe Fastlane::Actions::CopyScreenshotsAction do
 
     before do
       FileUtils.cp_r(original_images_dir_path, test_images_dir_path)
-      Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::SNAPSHOT_SCREENSHOTS_PATH] = test_images_dir_path
     end
 
     it 'iPad Pro (12.9-inch) (2nd generation) screenshots are copied as iPad Pro (12.9-inch) (3rd generation)' do
-      puts("en-US filePath: #{enus_test_filepath}")
-      puts("ja filePath: #{ja_test_filepath}")
+      Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::SNAPSHOT_SCREENSHOTS_PATH] = test_images_dir_path
 
       expect(File.exist?(enus_test_filepath)).to be_falsey
       expect(File.exist?(ja_test_filepath)).to be_falsey
@@ -30,11 +28,52 @@ describe Fastlane::Actions::CopyScreenshotsAction do
 
       expect(File.exist?(enus_test_filepath)).to be_truthy
       expect(File.exist?(ja_test_filepath)).to be_truthy
+
+      Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::SNAPSHOT_SCREENSHOTS_PATH] = nil
+    end
+
+    it 'Raise error when `capture_ios_screenshots` is not executed' do
+
+      Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::SNAPSHOT_SCREENSHOTS_PATH] = nil
+
+      expect(File.exist?(enus_test_filepath)).to be_falsey
+      expect(File.exist?(ja_test_filepath)).to be_falsey
+
+      runner = Fastlane::FastFile.new.parse("lane :test do
+        copy_screenshots(
+          source_device_name:\"iPad Pro (12.9-inch) (2nd generation)\",
+          target_device_name:\"iPad Pro (12.9-inch) (3rd generation)\"
+        )
+      end").runner
+
+      error_text = <<-EOS
+      Description:
+      Pre Action Required
+
+      Reason:
+      This action should be executed after `capture_ios_screenshots` action. 
+
+      Recover:
+      Please add the action like belows:
+
+        capture_ios_screenshots(
+          skip_open_summary: true,
+          clean: true
+        )
+      
+        copy_screenshots(
+          source_device_name: \"iPad Pro (12.9-inch) (2nd generation)\",
+          target_device_name: \"iPad Pro (12.9-inch) (3rd generation)\"
+        )
+        
+      EOS
+
+      expect { runner.execute(:test) }.to raise_error(error_text)
+      
     end
 
     after do
       FileUtils.rm_r(test_images_dir_path, { force: true })
-      Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::SNAPSHOT_SCREENSHOTS_PATH] = nil
     end
   end
 end
