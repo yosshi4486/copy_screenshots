@@ -9,6 +9,10 @@ module Fastlane
         target_device_name = params[:target_device_name]
         screenshots_dir_path = Actions.lane_context[SharedValues::SNAPSHOT_SCREENSHOTS_PATH]
 
+        if screenshots_dir_path.nil?
+          raise "Pre Action Required. This action should be executed after `capture_ios_screenshots` action."
+        end
+
         # glob iterates files which matched to the given predicate.
         Dir.glob("#{screenshots_dir_path}/**/#{source_device_name}*.png") do |f|
           # gsub replaces and returns matched strings.
@@ -26,7 +30,7 @@ module Fastlane
       #####################################################
 
       def self.description
-        "Copy screenshots with a specified device name."
+        "Copy screenshots with a specified device name. This action should be executed after `capture_ios_screenshots` action."
       end
 
       def self.details
