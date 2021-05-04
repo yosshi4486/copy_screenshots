@@ -33,7 +33,6 @@ describe Fastlane::Actions::CopyScreenshotsAction do
     end
 
     it 'Raise error when `capture_ios_screenshots` is not executed' do
-
       Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::SNAPSHOT_SCREENSHOTS_PATH] = nil
 
       expect(File.exist?(enus_test_filepath)).to be_falsey
@@ -46,30 +45,9 @@ describe Fastlane::Actions::CopyScreenshotsAction do
         )
       end").runner
 
-      error_text = <<-EOS
-      Description:
-      Pre Action Required
-
-      Reason:
-      This action should be executed after `capture_ios_screenshots` action. 
-
-      Recover:
-      Please add the action like belows:
-
-        capture_ios_screenshots(
-          skip_open_summary: true,
-          clean: true
-        )
-      
-        copy_screenshots(
-          source_device_name: \"iPad Pro (12.9-inch) (2nd generation)\",
-          target_device_name: \"iPad Pro (12.9-inch) (3rd generation)\"
-        )
-        
-      EOS
+      error_text = "Pre Action Required. This action should be executed after `capture_ios_screenshots` action."
 
       expect { runner.execute(:test) }.to raise_error(error_text)
-      
     end
 
     after do
