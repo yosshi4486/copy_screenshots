@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = 'yoshiharuseijin@gmail.com'
 
   spec.summary       = 'Copy screenshots with a specified device name.'
-  # spec.homepage      = "https://github.com/<GITHUB_USERNAME>/fastlane-plugin-copy_screenshots"
+  spec.homepage      = "https://github.com/yosshi4486/fastlane-plugin-copy_screenshots"
   spec.license       = "MIT"
 
   spec.files         = Dir["lib/**/*"] + %w(README.md LICENSE)
